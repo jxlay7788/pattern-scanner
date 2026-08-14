@@ -23,7 +23,39 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.notifications.telegram import send_message
 
-TABLE_COLUMNS = ["ticker", "close", "signal", "score", "rsi", "sma50", "sma200"]
+SIGNAL_EMOJI = {
+    "STRONG BUY": "\U0001F7E2\U0001F7E2",
+    "BUY": "\U0001F7E2",
+    "SELL": "\U0001F534",
+    "STRONG SELL": "\U0001F534\U0001F534",
+}
+
+
+def build_reason(row: pd.Series) -> str:
+    """Plain-English explanation of the strongest 1-2 indicators behind a signal."""
+    reasons = []
+    if row.get("ma_cross_signal") == 1:
+        reasons.append("just golden-crossed (50d MA above 200d)")
+    elif row.get("ma_cross_signal") == -1:
+        reasons.append("just death-crossed (50d MA below 200d)")
+    if row.get("rsi_signal") == 1:
+        reasons.append(f"oversold, RSI {row.get('rsi')}")
+    elif row.get("rsi_signal") == -1:
+        reasons.append(f"overbought, RSI {row.get('rsi')}")
+    if row.get("bollinger_signal") == 1:
+        reasons.append("price broke below its normal range")
+    elif row.get("bollinger_signal") == -1:
+        reasons.append("price broke above its normal range")
+    if row.get("macd_signal") == 1:
+        reasons.append("momentum just turned up")
+    elif row.get("macd_signal") == -1:
+        reasons.append("momentum just turned down")
+    if not reasons:
+        if row.get("ma_trend_signal") == 1:
+            reasons.append("trending up")
+        elif row.get("ma_trend_signal") == -1:
+            reasons.append("trending down")
+    return "; ".join(reasons[:2]) if reasons else "mixed signals"
 
 
 def parse_args() -> argparse.Namespace:
@@ -52,7 +84,17 @@ def build_table_block(df: pd.DataFrame, signals: list[str], ascending: bool, top
     subset = subset.sort_values("score", ascending=ascending).head(top)
     if subset.empty:
         return "(none)"
-    return tabulate(subset[TABLE_COLUMNS], headers="keys", tablefmt="simple", showindex=False)
+
+    rows = []
+    for _, row in subset.iterrows():
+        rows.append(
+            [
+                f"{SIGNAL_EMOJI.get(row['signal'], '')} {row['ticker']}",
+                f"${row['close']:.2f}",
+                build_reason(row),
+            ]
+        )
+    return tabulate(rows, headers=["Stock", "Price", "Why"], tablefmt="simple")
 
 
 def main() -> None:
@@ -65,7 +107,11 @@ def main() -> None:
     buy_table = build_table_block(results, ["STRONG BUY", "BUY"], ascending=False, top=args.top)
     sell_table = build_table_block(results, ["STRONG SELL", "SELL"], ascending=True, top=args.top)
 
-    sections = [f"<b>Stock Signal Alert</b>"]
+    sections = [
+        "<b>Stock Signal Alert</b>\n"
+        "\U0001F7E2\U0001F7E2 = strong buy   \U0001F7E2 = buy   "
+        "\U0001F534 = sell   \U0001F534\U0001F534 = strong sell"
+    ]
 
     if args.brief_file and os.path.exists(args.brief_file):
         with open(args.brief_file, "r", encoding="utf-8") as f:
@@ -73,11 +119,11 @@ def main() -> None:
         if brief:
             sections.append(html.escape(brief))
 
-    sections.append(f"<b>BUY signals</b>\n<pre>{html.escape(buy_table)}</pre>")
-    sections.append(f"<b>SELL signals</b>\n<pre>{html.escape(sell_table)}</pre>")
+    sections.append(f"<b>Consider buying</b>\n<pre>{html.escape(buy_table)}</pre>")
+    sections.append(f"<b>Consider selling</b>\n<pre>{html.escape(sell_table)}</pre>")
     sections.append(
-        "<i>Automated technical-indicator output (RSI, MACD crossover, "
-        "50/200-day SMA cross, Bollinger Bands) — not investment advice.</i>"
+        "<i>Automated technical-indicator output (RSI, MACD, moving averages, "
+        "Bollinger Bands) — not investment advice.</i>"
     )
 
     message = "\n\n".join(sections)
