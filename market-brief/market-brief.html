@@ -93,11 +93,12 @@ p { margin: 0; }
   border-bottom: 1px solid var(--line);
 }
 .backlink {
-  display: inline-flex; align-items: center; gap: 4px;
-  font-size: 0.8125rem; color: var(--muted); text-decoration: none; margin-bottom: 10px;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 0.9375rem; font-weight: 600; color: var(--ink); text-decoration: none; margin-bottom: 14px;
+  padding: 9px 16px 9px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
 }
-.backlink svg { width: 15px; height: 15px; }
-.backlink:hover { color: var(--accent); }
+.backlink svg { width: 18px; height: 18px; }
+.backlink:hover { color: var(--accent); border-color: var(--accent); }
 .eyebrow {
   font-size: 0.75rem; color: var(--accent); text-transform: uppercase;
   letter-spacing: 0.12em; font-weight: 600;
@@ -153,6 +154,21 @@ p { margin: 0; }
 .stock-name { font-size: 0.9375rem; font-weight: 600; }
 .stock-why { margin-top: 2px; font-size: 0.8125rem; color: var(--muted); }
 
+.position-card {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--accent); border-radius: 16px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.position-ticker {
+  flex: 0 0 auto; font-family: 'Poppins Energetic', sans-serif; font-weight: 700; font-size: 0.8125rem;
+  color: var(--accent-ink); background: var(--accent); border-radius: 8px; padding: 6px 10px; min-width: 56px; text-align: center;
+}
+.position-body { flex: 1; min-width: 0; }
+.position-name { font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
+.position-price-row { display: flex; align-items: baseline; gap: 8px; margin-top: 2px; flex-wrap: wrap; }
+.position-price { font-family: 'Poppins Energetic', sans-serif; font-weight: 700; font-size: 1.1875rem; font-variant-numeric: tabular-nums; }
+.position-note { margin-top: 4px; font-size: 0.75rem; color: var(--muted); }
+
 .risk-item { display: flex; gap: 10px; align-items: flex-start; font-size: 0.875rem; }
 .risk-dot { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-top: 7px; }
 
@@ -202,6 +218,46 @@ p { margin: 0; }
         </div>
       </div>
       <div class="idx-note" style="margin-top:10px;">Levels shown are Thursday's close; today's figures are the early-trading move on top of that. Thursday itself was a rough day — Dow -1.32%, S&amp;P -0.87%, Nasdaq -1%.</div>
+    </section>
+
+    <section>
+      <div class="section-label">Your positions</div>
+      <div class="watch-list">
+        <div class="position-card">
+          <div class="position-ticker">TSLA</div>
+          <div class="position-body">
+            <div class="position-name">Tesla</div>
+            <div class="position-price-row">
+              <div class="position-price">$349.86</div>
+              <div class="idx-change up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>+1.1% today</div>
+            </div>
+            <div class="position-note">Day range $348.20–$350.04 · 52-week range $297.38–$498.83 — currently well off its yearly high</div>
+          </div>
+        </div>
+        <div class="position-card">
+          <div class="position-ticker">NVDA</div>
+          <div class="position-body">
+            <div class="position-name">Nvidia</div>
+            <div class="position-price-row">
+              <div class="position-price">$216.85</div>
+              <div class="idx-change down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 11l6 6 6-6"/></svg>flat</div>
+            </div>
+            <div class="position-note">Day range $215.66–$219.86 · 52-week range $164.07–$236.54 — sitting in the upper half of its yearly range, but this week's bond sell-off has been the main headwind on AI/tech names like this one</div>
+          </div>
+        </div>
+        <div class="position-card">
+          <div class="position-ticker">VOO</div>
+          <div class="position-body">
+            <div class="position-name">Vanguard S&amp;P 500 ETF</div>
+            <div class="position-price-row">
+              <div class="position-price">$701.01</div>
+              <div class="idx-change down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 11l6 6 6-6"/></svg>-0.8%</div>
+            </div>
+            <div class="position-note">Tracking the broader index, so it's carrying the same pullback from this week's bond-driven sell-off as the S&amp;P snapshot above</div>
+          </div>
+        </div>
+      </div>
+      <div class="idx-note" style="margin-top:10px;">Since you're holding these long-term, day-to-day moves matter less than the trend — the 52-week ranges above are there to give today's number some context.</div>
     </section>
 
     <section>
@@ -267,6 +323,9 @@ p { margin: 0; }
       <a href="https://www.cnbc.com/2026/08/19/stock-market-today-live-updates.html" target="_blank" rel="noopener">CNBC</a>
       <a href="https://www.thestreet.com/stock-market-today/stock-market-today-dow-jones-sp-500-nasdaq-updates-aug-21-2026" target="_blank" rel="noopener">TheStreet</a>
       <a href="https://www.tipranks.com/news/earnings-to-watch-this-week-august-3-7-2026" target="_blank" rel="noopener">TipRanks</a>
+      <a href="https://tradingeconomics.com/tsla:us" target="_blank" rel="noopener">Trading Economics (TSLA)</a>
+      <a href="https://www.investing.com/equities/nvidia-corp" target="_blank" rel="noopener">Investing.com (NVDA)</a>
+      <a href="https://stockanalysis.com/etf/voo/" target="_blank" rel="noopener">StockAnalysis (VOO)</a>
     </div>
   </div>
 </div>
