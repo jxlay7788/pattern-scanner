@@ -267,6 +267,17 @@ p { margin: 0; }
 }
 .todo-del:hover { color: var(--accent); }
 .todo-empty { font-size: 0.875rem; color: var(--muted); padding: 18px 0; text-align: center; }
+.todo-done-label {
+  font-family: 'Poppins Energetic', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 14px 0 2px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
 
 /* ---------- Nav card ---------- */
 .navcard {
@@ -1107,13 +1118,22 @@ p { margin: 0; }
     document.getElementById("greeting").textContent = word + ", jxlay";
   })();
 
+  function todayStr() {
+    var d = new Date();
+    var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+
   var todos = load();
 
   function load() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
       var parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
+      var arr = Array.isArray(parsed) ? parsed : [];
+      var t = todayStr();
+      // Finished tasks stick around until the day changes, then drop off.
+      return arr.filter(function (todo) { return !todo.done || todo.completedDate === t; });
     } catch (e) {
       return [];
     }
@@ -1121,6 +1141,41 @@ p { margin: 0; }
 
   function save() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  }
+
+  function buildTodoItem(todo, idx) {
+    var item = document.createElement("div");
+    item.className = "todo-item" + (todo.done ? " is-done" : "");
+
+    var check = document.createElement("button");
+    check.className = "todo-check" + (todo.done ? " done" : "");
+    check.innerHTML = CHECK_ICON;
+    check.setAttribute("aria-label", todo.done ? "Mark as not done" : "Mark as done");
+    check.addEventListener("click", function () {
+      todos[idx].done = !todos[idx].done;
+      todos[idx].completedDate = todos[idx].done ? todayStr() : null;
+      save();
+      render();
+    });
+
+    var text = document.createElement("div");
+    text.className = "todo-text";
+    text.textContent = todo.text;
+
+    var del = document.createElement("button");
+    del.className = "todo-del";
+    del.setAttribute("aria-label", "Delete task");
+    del.textContent = "×";
+    del.addEventListener("click", function () {
+      todos.splice(idx, 1);
+      save();
+      render();
+    });
+
+    item.appendChild(check);
+    item.appendChild(text);
+    item.appendChild(del);
+    return item;
   }
 
   function render() {
@@ -1135,46 +1190,26 @@ p { margin: 0; }
       return;
     }
 
-    todos.forEach(function (todo, idx) {
-      var item = document.createElement("div");
-      item.className = "todo-item" + (todo.done ? " is-done" : "");
+    var activeIdx = [];
+    var doneIdx = [];
+    todos.forEach(function (todo, idx) { (todo.done ? doneIdx : activeIdx).push(idx); });
 
-      var check = document.createElement("button");
-      check.className = "todo-check" + (todo.done ? " done" : "");
-      check.innerHTML = CHECK_ICON;
-      check.setAttribute("aria-label", todo.done ? "Mark as not done" : "Mark as done");
-      check.addEventListener("click", function () {
-        todos[idx].done = !todos[idx].done;
-        save();
-        render();
-      });
+    activeIdx.forEach(function (idx) { list.appendChild(buildTodoItem(todos[idx], idx)); });
 
-      var text = document.createElement("div");
-      text.className = "todo-text";
-      text.textContent = todo.text;
-
-      var del = document.createElement("button");
-      del.className = "todo-del";
-      del.setAttribute("aria-label", "Delete task");
-      del.textContent = "×";
-      del.addEventListener("click", function () {
-        todos.splice(idx, 1);
-        save();
-        render();
-      });
-
-      item.appendChild(check);
-      item.appendChild(text);
-      item.appendChild(del);
-      list.appendChild(item);
-    });
+    if (doneIdx.length) {
+      var label = document.createElement("div");
+      label.className = "todo-done-label";
+      label.textContent = "Finished today";
+      list.appendChild(label);
+      doneIdx.forEach(function (idx) { list.appendChild(buildTodoItem(todos[idx], idx)); });
+    }
   }
 
   function addTodo() {
     var input = document.getElementById("todoInput");
     var val = input.value.trim();
     if (!val) return;
-    todos.push({ text: val, done: false });
+    todos.push({ text: val, done: false, completedDate: null });
     input.value = "";
     save();
     render();
