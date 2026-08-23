@@ -1119,7 +1119,9 @@ p { margin: 0; }
   })();
 
   function todayStr() {
+    // The "day" rolls over at 7am, not midnight — before 7am still counts as yesterday.
     var d = new Date();
+    if (d.getHours() < 7) d.setDate(d.getDate() - 1);
     var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
     return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   }
