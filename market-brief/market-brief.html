@@ -130,6 +130,8 @@ p { margin: 0; }
 .idx-change.up { color: var(--gain); background: var(--gain-bg); }
 .idx-change.down { color: var(--loss); background: var(--loss-bg); }
 .idx-note { margin-top: 8px; font-size: 0.75rem; color: var(--muted); }
+.idx-why { margin-top: 4px; font-size: 0.6875rem; color: var(--ink); font-weight: 600; line-height: 1.4; }
+.position-why { margin-top: 6px; font-size: 0.75rem; color: var(--ink); font-weight: 600; }
 
 .news-list, .watch-list, .risk-list, .positions-list { display: flex; flex-direction: column; gap: 10px; }
 .news-card {
@@ -186,7 +188,7 @@ p { margin: 0; }
 
 <div class="wrap">
   <header class="hero">
-    <a class="backlink" href="Home.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Home</a>
+    <a class="backlink" href="https://claude.ai/code/artifact/097487a4-83c8-46c3-a4e9-1063586fff87" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>Home</a>
     <div class="eyebrow">Daily Market Brief</div>
     <h1 class="title disp">Market Brief</h1>
     <p class="dateline">Saturday, August 22, 2026</p>
@@ -203,18 +205,21 @@ p { margin: 0; }
           <div class="idx-level">53,277</div>
           <div class="idx-change up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>+1.0%</div>
           <div class="idx-note">Friday's close</div>
+          <div class="idx-why">Why: led the rebound (+518pts) as Treasury's bigger bond buybacks eased the week's sell-off pressure</div>
         </div>
         <div class="idx-card">
           <div class="idx-name">S&amp;P 500</div>
           <div class="idx-level">7,674</div>
           <div class="idx-change up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>+0.4%</div>
           <div class="idx-note">Friday's close</div>
+          <div class="idx-why">Why: tracked the broader relief rally, though it lagged the Dow as tech stayed cautious</div>
         </div>
         <div class="idx-card">
           <div class="idx-name">NASDAQ</div>
           <div class="idx-level">26,180</div>
           <div class="idx-change up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>+0.4%</div>
           <div class="idx-note">Friday's close</div>
+          <div class="idx-why">Why: rebounded despite AI/tech names like Nvidia still lagging on bond-yield worries</div>
         </div>
       </div>
       <div class="idx-note" style="margin-top:10px;">Levels shown are Friday's close, a strong rebound day (Dow +518pts) after Treasury doubled its bond buybacks to calm the week's sell-off — but all three indexes still finished the week lower overall.</div>
@@ -231,7 +236,8 @@ p { margin: 0; }
               <div class="position-price">$362.86</div>
               <div class="idx-change up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>+5.1% Friday</div>
             </div>
-            <div class="position-note">Day range $346.90–$364.48 · 52-week range $297.38–$498.83 — jumped after Nevada approved Tesla for up to 5,000 robotaxis in Las Vegas, its best week since May, though still well off its yearly high</div>
+            <div class="position-note">Day range $346.90–$364.48 · 52-week range $297.38–$498.83 — still well off its yearly high</div>
+            <div class="position-why">Why: Nevada approved Tesla for up to 5,000 robotaxis in Las Vegas — its best week since May</div>
           </div>
         </div>
         <div class="position-card">
@@ -242,7 +248,8 @@ p { margin: 0; }
               <div class="position-price">$214.72</div>
               <div class="idx-change down"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 11l6 6 6-6"/></svg>-1.0% Friday</div>
             </div>
-            <div class="position-note">Day range $214.50–$218.74 · 52-week range $164.07–$236.54 — one of the few laggards on an otherwise strong Friday, as investors stayed cautious into Wednesday's Q2 FY27 earnings, where Wall Street expects roughly 99% year-over-year EPS growth</div>
+            <div class="position-note">Day range $214.50–$218.74 · 52-week range $164.07–$236.54</div>
+            <div class="position-why">Why: one of the few Friday laggards as investors stayed cautious into Wednesday's earnings, where Wall Street expects ~99% year-over-year EPS growth</div>
           </div>
         </div>
         <div class="position-card">
@@ -253,7 +260,8 @@ p { margin: 0; }
               <div class="position-price">$703.71</div>
               <div class="idx-change up"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg>+0.4% Friday</div>
             </div>
-            <div class="position-note">52-week range $578.46–$716.39 — tracked the S&amp;P's Friday rebound, but like the index above it's still a bit below this year's record high after this week's bond-driven pullback</div>
+            <div class="position-note">52-week range $578.46–$716.39 — still a bit below this year's record high</div>
+            <div class="position-why">Why: tracked the S&amp;P's Friday rebound after this week's bond-driven pullback</div>
           </div>
         </div>
       </div>
