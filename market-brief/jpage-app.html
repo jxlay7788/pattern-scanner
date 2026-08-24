@@ -829,6 +829,29 @@ p { margin: 0; }
 .disclaimer strong { color: var(--ink); }
 .sources { font-size: 0.75rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; }
 .sources a { color: var(--muted); }
+
+.watchlist-add { display: flex; gap: 8px; margin-bottom: 12px; }
+.watchlist-add input {
+  flex: 1; min-width: 0; border: 1px solid var(--line); background: var(--surface);
+  border-radius: 12px; padding: 10px 12px; font-size: 0.9375rem; color: var(--ink); font-family: inherit;
+}
+.watchlist-add input::placeholder { color: var(--muted); }
+.watchlist-add input:focus { outline: none; border-color: var(--accent); }
+.watchlist-add button {
+  flex: 0 0 auto; width: 42px; height: 42px; border: none; border-radius: 12px;
+  background: var(--accent); color: var(--accent-ink); font-size: 1.25rem; line-height: 1; cursor: pointer;
+}
+.watchlist-add button:active { transform: scale(0.94); }
+.watchlist-del {
+  flex: 0 0 auto; border: none; background: transparent; color: var(--muted);
+  width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1.125rem;
+}
+.watchlist-del:hover { color: var(--loss); background: var(--loss-bg); }
+
+.glossary-list { display: flex; flex-direction: column; gap: 12px; }
+.glossary-term { font-family: 'Poppins Energetic', sans-serif; font-weight: 700; font-size: 0.875rem; }
+.glossary-def { margin-top: 2px; font-size: 0.8125rem; color: var(--muted); }
 </style>
 
 <div class="wrap">
@@ -936,7 +959,7 @@ p { margin: 0; }
     <div class="eyebrow">Daily Market Brief</div>
     <h1 class="title disp">Markets</h1>
     <p class="dateline">Monday, August 24, 2026</p>
-    <p class="freshness">Updates automatically every 3 hours throughout the day</p>
+    <p class="freshness">Updates automatically every hour</p>
   </header>
 
   <main class="content">
@@ -1013,6 +1036,16 @@ p { margin: 0; }
     </section>
 
     <section>
+      <div class="section-label">Watchlist</div>
+      <div class="watchlist-add">
+        <input type="text" id="watchlistInput" placeholder="Add a ticker, e.g. AAPL" maxlength="10" autocomplete="off">
+        <button type="button" id="watchlistAddBtn" aria-label="Add to watchlist">+</button>
+      </div>
+      <div class="watch-list" id="watchlistItems"></div>
+      <div class="idx-note" style="margin-top:10px;">This list is just for your own reference, saved on this device — it has no live price. To get a ticker actually tracked with a real, auto-refreshing price like your positions above, tell me in chat to add it.</div>
+    </section>
+
+    <section>
       <div class="section-label">What's moving markets</div>
       <div class="news-list">
         <div class="news-card">
@@ -1072,6 +1105,21 @@ p { margin: 0; }
         <div class="risk-item"><span class="risk-dot"></span>Nvidia's earnings Wednesday — the single biggest catalyst on the calendar given NVDA's outsized weight in major indexes, including VOO; a miss could ripple across the broader market.</div>
         <div class="risk-item"><span class="risk-dot"></span>July PCE inflation and Q2 GDP (Wednesday), plus Fed Chair Kevin Warsh's first Jackson Hole speech as chair (Friday) — together could reset rate-cut expectations and drive volatility.</div>
       </div>
+    </section>
+
+    <section>
+      <div class="section-label">Glossary</div>
+      <div class="glossary-list">
+        <div><div class="glossary-term">Why</div><div class="glossary-def">The line explaining what actually drove a move — the real story, not just the number.</div></div>
+        <div><div class="glossary-term">Day range</div><div class="glossary-def">The lowest and highest price a stock traded at during that one day.</div></div>
+        <div><div class="glossary-term">52-week range</div><div class="glossary-def">The lowest and highest price over the past year, so you can see where today's price sits in the bigger picture.</div></div>
+        <div><div class="glossary-term">Index (Dow, S&amp;P 500, Nasdaq)</div><div class="glossary-def">A basket of many stocks tracked as one number — a snapshot of "the market" as a whole rather than any single company.</div></div>
+        <div><div class="glossary-term">Ticker</div><div class="glossary-def">The short letter code a stock trades under — e.g. TSLA for Tesla.</div></div>
+        <div><div class="glossary-term">VOO</div><div class="glossary-def">A fund you can buy like a stock that holds all 500 companies in the S&amp;P 500 at once, so its price roughly tracks the index above.</div></div>
+        <div><div class="glossary-term">Your positions</div><div class="glossary-def">Stocks or funds you actually hold — here, TSLA, NVDA and VOO specifically, since you said you're keeping them long-term.</div></div>
+        <div><div class="glossary-term">Watchlist</div><div class="glossary-def">Tickers you're keeping an eye on but don't have tracked with a live price yet.</div></div>
+      </div>
+      <div class="idx-note" style="margin-top:10px;">Don't see your question answered here? Just ask me directly in the chat — this page can't take questions on its own.</div>
     </section>
 
   </main>
@@ -1671,6 +1719,75 @@ p { margin: 0; }
   var elapsed = Math.max(0, totalWeeks - weeksLeft);
   document.getElementById("progressFill").style.width = Math.min(100, Math.round((elapsed / totalWeeks) * 100)) + "%";
 })();
+
+(function () {
+  "use strict";
+  var KEY = "jpage.watchlist.v1";
+  var list = load();
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) { return []; }
+  }
+  function save() { localStorage.setItem(KEY, JSON.stringify(list)); }
+
+  function render() {
+    var host = document.getElementById("watchlistItems");
+    host.innerHTML = "";
+    list.forEach(function (ticker, idx) {
+      var row = document.createElement("div");
+      row.className = "stock-card";
+
+      var badge = document.createElement("div");
+      badge.className = "stock-ticker";
+      badge.textContent = ticker;
+
+      var body = document.createElement("div");
+      body.className = "stock-body";
+      var name = document.createElement("div");
+      name.className = "stock-name";
+      name.textContent = "Saved to watchlist";
+      body.appendChild(name);
+
+      var del = document.createElement("button");
+      del.type = "button";
+      del.className = "watchlist-del";
+      del.setAttribute("aria-label", "Remove " + ticker);
+      del.textContent = "×";
+      del.addEventListener("click", function () {
+        list.splice(idx, 1);
+        save();
+        render();
+      });
+
+      row.appendChild(badge);
+      row.appendChild(body);
+      row.appendChild(del);
+      host.appendChild(row);
+    });
+  }
+
+  function addTicker() {
+    var input = document.getElementById("watchlistInput");
+    var val = input.value.trim().toUpperCase().replace(/[^A-Z.]/g, "");
+    if (!val) return;
+    if (list.indexOf(val) === -1) list.push(val);
+    input.value = "";
+    save();
+    render();
+  }
+
+  document.getElementById("watchlistAddBtn").addEventListener("click", addTicker);
+  document.getElementById("watchlistInput").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") { e.preventDefault(); addTicker(); }
+  });
+
+  render();
+})();
+
 (function () {
   "use strict";
   var tabs = document.querySelectorAll(".apptab");
